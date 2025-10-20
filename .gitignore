@@ -1,0 +1,12 @@
+.idea
+__pycache__/
+.venv/
+.env
+app.db
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+htmlcov/
+coverage.xml

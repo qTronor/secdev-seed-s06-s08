@@ -1,0 +1,28 @@
+services:
+  web:
+    build: .
+    image: secdev-seed:latest
+    ports: ["8000:8000"]
+    environment:
+      - DB_PATH=/app/app.db
+      - EVIDENCE_DIR=/app/EVIDENCE/S08
+    user: "10001:10001"
+    volumes:
+      - ./EVIDENCE/S08:/app/EVIDENCE/S08
+
+  tests:
+    image: secdev-seed:latest
+    working_dir: /app
+    user: "10001:10001"
+    environment:
+      - DB_PATH=/app/app.db
+      - EVIDENCE_DIR=/app/EVIDENCE/S08
+    volumes:
+      - ./tests:/app/tests:ro           # <— смонтируй, если не копируешь tests в образ
+      - ./EVIDENCE/S08:/app/EVIDENCE/S08
+    command: >
+      sh -lc "python3 -m venv /tmp/venv &&
+              . /tmp/venv/bin/activate &&
+              python -m pip install -r requirements.txt &&
+              mkdir -p /app/EVIDENCE/S08 &&
+              python -m pytest /app/tests -v --junitxml=/app/EVIDENCE/S08/test-report.xml"
