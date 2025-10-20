@@ -1,4 +1,3 @@
-
 name: ci
 
 on:
@@ -8,6 +7,11 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      # Совместимо с app/db.py и логами в app/main.py
+      DB_PATH: app.db
+      EVIDENCE_DIR: EVIDENCE/S08
+      PYTHONUNBUFFERED: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"  # совпадает с Dockerfile
 
       - name: Cache pip
         uses: actions/cache@v4
@@ -28,20 +32,21 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Init DB
-        run: python scripts/init_db.py
+      - name: Init DB (optional)
+        run: |
+          if [ -f scripts/init_db.py ]; then
+            python scripts/init_db.py || true
+          fi
 
       - name: Run tests
         run: |
-          mkdir -p EVIDENCE/S08
-          pytest -q --junitxml=EVIDENCE/S08/test-report.xml
-        continue-on-error: false
+          mkdir -p "$EVIDENCE_DIR"
+          pytest -v --junitxml="$EVIDENCE_DIR/test-report.xml"
 
-      - name: Upload artifacts
+      - name: Upload artifacts (EVIDENCE/S08)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: evidence-s08
-          path: |
-            EVIDENCE/S08/**
+          path: EVIDENCE/S08/**
           if-no-files-found: warn

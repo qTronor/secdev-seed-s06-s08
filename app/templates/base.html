@@ -1,13 +1,15 @@
-
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>secdev-seed</title>
+    <meta charset="utf-8">
+    <title>secdev-seed</title>
+    {# при желании можно добавить CSP заголовок со стороны FastAPI;
+    мета-тег здесь оставляем как напоминание:
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> #}
 </head>
 <body>
-  <main>
+<main>
     {% block content %}{% endblock %}
-  </main>
+</main>
 </body>
 </html>
